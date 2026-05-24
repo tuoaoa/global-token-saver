@@ -117,6 +117,19 @@ function handleRequest(rawLine) {
                         },
                         required: ["baseContext", "turns", "pricePerMillion", "prunedPayload"]
                     }
+                },
+                {
+                    name: "aimemory_prune_idle_snapshots",
+                    description: "Autonomously clean up unused file snapshots older than 7 days in SQLite to optimize VPS disk footprint.",
+                    inputSchema: {
+                        type: "object",
+                        properties: {
+                            olderThanDays: {
+                                type: "number",
+                                description: "Optional custom threshold in days (defaults to 7)."
+                            }
+                        }
+                    }
                 }
             ]
         });
@@ -184,6 +197,50 @@ function handleRequest(rawLine) {
                     }, null, 2)
                 }]
             });
+            return;
+        }
+
+        if (name === "aimemory_prune_idle_snapshots") {
+            const olderThanDays = args && args.olderThanDays !== undefined ? args.olderThanDays : 7;
+            try {
+                if (!db) {
+                    sendResponse(id, { content: [{ type: "text", text: "Database not connected. Returning empty." }] });
+                    return;
+                }
+                const thresholdSeconds = Math.floor(Date.now() / 1000) - (olderThanDays * 24 * 60 * 60);
+
+                let beforeCount = 0;
+                try {
+                    const countStmt = db.prepare("SELECT COUNT(*) as count FROM file_snapshots WHERE last_updated < ?");
+                    const countRow = countStmt.get(thresholdSeconds);
+                    beforeCount = countRow ? countRow.count : 0;
+                } catch (e) {
+                    // Table might not exist or schema differ
+                }
+
+                try {
+                    const deleteStmt = db.prepare("DELETE FROM file_snapshots WHERE last_updated < ?");
+                    deleteStmt.run(thresholdSeconds);
+                    db.exec("VACUUM;");
+                } catch (e) {
+                    sendResponse(id, { content: [{ type: "text", text: `Database execution error: ${e.message}` }] });
+                    return;
+                }
+
+                sendResponse(id, {
+                    content: [{
+                        type: "text",
+                        text: JSON.stringify({
+                            success: true,
+                            message: `Successfully pruned ${beforeCount} idle snapshots older than ${olderThanDays} days.`,
+                            deletedCount: beforeCount,
+                            databaseReclaimed: true
+                        }, null, 2)
+                    }]
+                });
+            } catch (err) {
+                sendResponse(id, { content: [{ type: "text", text: `Database prune error: ${err.message}` }] });
+            }
             return;
         }
 
