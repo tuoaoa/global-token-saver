@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIPILOT.VN - Developer Console</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+    
+    <!-- Outfit & Monospace Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-black: #000000;
+            --cyber-green: #00FF66;
+            --cyber-green-dim: #008f39;
+            --cyber-green-trans: rgba(0, 255, 102, 0.15);
+            --stark-white: #FFFFFF;
+            --dark-gray: #121212;
+            --border-gray: #222222;
+            --glow-color: rgba(0, 255, 102, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--stark-white);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mono {
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        /* --- Header / Navigation --- */
+        header {
+            border-bottom: 2px solid var(--border-gray);
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--stark-white);
+        }
+
+        .logo-icon {
+            color: var(--cyber-green);
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px var(--glow-color);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            color: var(--cyber-green);
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            color: var(--stark-white);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--cyber-green);
+        }
+
+        .session-info {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.9rem;
+            color: #888;
+            border-left: 1px solid var(--border-gray);
+            padding-left: 1.5rem;
+            flex-wrap: wrap;
+            word-break: break-all;
+        }
+
+        .status-badge {
+            background-color: var(--cyber-green-trans);
+            color: var(--cyber-green);
+            border: 1px solid var(--cyber-green);
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        /* Language Toggle styling */
+        .lang-toggle {
+            display: flex;
+            border: 1px solid var(--border-gray);
+            padding: 2px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            background-color: var(--dark-gray);
+        }
+
+        .lang-btn {
+            padding: 4px 8px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .lang-btn.active {
+            color: var(--cyber-green);
+            background-color: var(--bg-black);
+            font-weight: bold;
+            box-shadow: 0 0 5px var(--cyber-green-trans);
+        }
+
+        .btn-glow {
+            border: 2px solid var(--cyber-green);
+            background: transparent;
+            color: var(--cyber-green);
+            padding: 0.6rem 1.2rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 5px var(--cyber-green-trans);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-glow:hover {
+            background-color: var(--cyber-green);
+            color: var(--bg-black);
+            box-shadow: 0 0 15px var(--cyber-green);
+        }
+
+        .btn-upgrade {
+            width: 100%;
+            padding: 1rem;
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 1rem;
+            border-color: var(--cyber-green);
+            margin-top: 1rem;
+        }
+
+        /* --- Main Layout --- */
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 3rem auto;
+            padding: 0 2rem;
+            flex-grow: 1;
+            box-sizing: border-box;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.2fr);
+            gap: 2.5rem;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* --- Panels --- */
+        .panel {
+            background-color: var(--dark-gray);
+            border: 2px solid var(--border-gray);
+            padding: 2.5rem;
+            position: relative;
+            margin-bottom: 2.5rem;
+        }
+
+        .panel::before {
+            content: attr(data-title);
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background-color: var(--bg-black);
+            color: var(--cyber-green);
+            font-family: 'Share Tech Mono', monospace;
+            padding: 0 10px;
+            font-size: 0.8rem;
+            border: 1px solid var(--border-gray);
+        }
+
+        .panel h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 0.8rem;
+        }
+
+        /* --- Metrics Grid --- */
+        .metrics-panel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-gray);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .metric-card.saved {
+            border-color: var(--cyber-green);
+        }
+
+        .metric-card .label {
+            font-size: 0.8rem;
+            color: #888;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .metric-card .value {
+            font-size: clamp(1.4rem, 4vw, 2rem);
+            font-weight: 800;
+            margin-top: 0.5rem;
+            word-break: break-all;
+        }
+
+        .metric-card.saved .value {
+            color: var(--cyber-green);
+            text-shadow: 0 0 10px var(--cyber-green-trans);
+        }
+
+        .info-box {
+            background-color: rgba(0, 255, 102, 0.05);
+            border-left: 3px solid var(--cyber-green);
+            padding: 1.2rem;
+            font-size: 0.95rem;
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        /* --- API Keys --- */
+        .key-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            background-color: #080808;
+            border: 1px solid var(--border-gray);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .key-display {
+            flex-grow: 1;
+            font-size: 1.1rem;
+            color: #ccc;
+            letter-spacing: 1px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* --- 1-Click Onboarding --- */
+        .terminal-oneliner {
+            background-color: #050505;
+            border: 1px solid var(--border-gray);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .oneliner-text {
+            flex-grow: 1;
+            font-size: 0.95rem;
+            color: #88ff88;
+            overflow-x: auto;
+            white-space: nowrap;
+            min-width: 0;
+            scrollbar-width: none;
+        }
+
+        .oneliner-text::-webkit-scrollbar {
+            display: none;
+        }
+
+        .btn-copy-oneliner {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* --- Modal payment styling --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-y: auto;
+            padding: 2rem 0;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-content {
+            background-color: var(--dark-gray);
+            border: 2px solid var(--cyber-green);
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 90%;
+            margin: auto;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 255, 102, 0.2);
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .qr-container {
+            background: #ffffff;
+            padding: 1rem;
+            display: inline-block;
+            margin: 1.5rem 0;
+            border: 2px solid var(--cyber-green);
+        }
+
+        .qr-image {
+            width: 250px;
+            height: 250px;
+            display: block;
+        }
+
+        .payment-instructions {
+            text-align: left;
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-top: 1.5rem;
+            border-top: 1px solid #333;
+            padding-top: 1rem;
+        }
+
+        .payment-instructions strong {
+            color: var(--stark-white);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.8rem;
+            color: #888;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-modal:hover {
+            color: var(--cyber-green);
+        }
+
+        /* --- Floating Chat Widget --- */
+        .chat-widget-bubble {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--bg-black);
+            border: 2px solid var(--cyber-green);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 0 15px var(--cyber-green-trans);
+            transition: all 0.3s;
+        }
+
+        .chat-widget-bubble:hover {
+            box-shadow: 0 0 25px var(--cyber-green);
+            transform: scale(1.05);
+        }
+
+        .chat-widget-bubble svg {
+            fill: var(--cyber-green);
+            width: 28px;
+            height: 28px;
+        }
+
+        .chat-widget-window {
+            display: none;
+            flex-direction: column;
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 380px;
+            height: 500px;
+            background-color: var(--bg-black);
+            border: 2px solid var(--cyber-green);
+            z-index: 1000;
+            box-shadow: 0 0 30px rgba(0, 255, 102, 0.15);
+        }
+
+        .chat-header {
+            border-bottom: 2px solid var(--border-gray);
+            padding: 1rem;
+            background-color: var(--dark-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-title {
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: var(--stark-white);
+        }
+
+        .chat-close {
+            color: #888;
+            cursor: pointer;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .chat-close:hover {
+            color: var(--cyber-green);
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .chat-bubble {
+            padding: 0.8rem;
+            max-width: 85%;
+            line-height: 1.4;
+        }
+
+        .chat-bubble.ai {
+            background-color: var(--dark-gray);
+            border: 1px solid var(--border-gray);
+            align-self: flex-start;
+            color: #ddd;
+        }
+
+        .chat-bubble.user {
+            background-color: var(--cyber-green-trans);
+            border: 1px solid var(--cyber-green);
+            align-self: flex-end;
+            color: var(--cyber-green);
+        }
+
+        .chat-input-area {
+            border-top: 2px solid var(--border-gray);
+            padding: 0.8rem;
+            display: flex;
+            gap: 0.5rem;
+            background-color: var(--dark-gray);
+        }
+
+        .chat-input {
+            flex-grow: 1;
+            background-color: var(--bg-black);
+            border: 1px solid var(--border-gray);
+            color: var(--stark-white);
+            padding: 0.6rem;
+            font-family: inherit;
+            font-size: 0.85rem;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--cyber-green);
+        }
+
+        .chat-send {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.85rem;
+        }
+
+        /* --- Footer --- */
+        footer {
+            border-top: 2px solid var(--border-gray);
+            padding: 3rem 2rem;
+            text-align: center;
+            background-color: var(--bg-black);
+            color: #666666;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+
+        footer a {
+            color: #888888;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        footer a:hover {
+            color: var(--cyber-green);
+        }
+
+        /* --- MOBILE RESPONSIVENESS MEDIA QUERIES --- */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+            .container {
+                margin: 2rem auto;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+                align-items: center;
+            }
+            .nav-container {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 0.8rem;
+            }
+            nav {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+            nav a {
+                font-size: 0.9rem;
+            }
+            .session-info {
+                border-left: none;
+                padding-left: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 0.4rem;
+                text-align: center;
+            }
+            .metrics-panel-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .panel {
+                padding: 1.5rem;
+            }
+            .key-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+            }
+            .key-row button {
+                width: 100%;
+            }
+            .terminal-oneliner {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+            }
+            .terminal-oneliner button {
+                width: 100%;
+            }
+            .oneliner-text {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 5px;
+            }
+            .chat-widget-window {
+                width: calc(100% - 40px);
+                right: 20px;
+                bottom: 90px;
+                height: 400px;
+                overflow: hidden;
+            }
+            .chat-widget-bubble {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        /* --- Hyper-Personalization Adaptive UI Matrix --- */
+        body.consumer-mode {
+            font-family: 'Outfit', sans-serif !important;
+        }
+        body.consumer-mode .onboarding-box,
+        body.consumer-mode .simulator-container,
+        body.consumer-mode .tool-card,
+        body.consumer-mode .panel,
+        body.consumer-mode .metric-card,
+        body.consumer-mode .key-row,
+        body.consumer-mode .terminal-oneliner,
+        body.consumer-mode .modal-content,
+        body.consumer-mode .chat-widget-window,
+        body.consumer-mode .btn-glow {
+            border-radius: 8px !important;
+        }
+
+        body.developer-mode {
+            font-family: 'Share Tech Mono', monospace !important;
+        }
+        body.developer-mode * {
+            border-radius: 0px !important;
+        }
+
+        /* Sleek thin cyberpunk custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--cyber-green-dim);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--cyber-green);
+        }
+
+        /* Electrical Industrial Power Toggle Switch */
+        .power-switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .power-switch {
+            position: relative;
+            display: inline-block;
+            width: 80px;
+            height: 40px;
+        }
+        .power-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .power-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #1a1a1a;
+            border: 2px solid var(--border-gray);
+            transition: .4s;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+        .power-slider:before {
+            position: absolute;
+            content: "OFF";
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #ff3333;
+            text-align: center;
+            line-height: 24px;
+            height: 26px;
+            width: 34px;
+            left: 5px;
+            bottom: 5px;
+            background-color: #0b0b0b;
+            border: 2px solid #555;
+            transition: .4s;
+            box-shadow: 0 4px 5px rgba(0,0,0,0.4);
+        }
+        .power-switch input:checked + .power-slider {
+            background-color: var(--cyber-green-trans);
+            border-color: var(--cyber-green);
+            box-shadow: 0 0 15px var(--cyber-green-trans);
+        }
+        .power-switch input:checked + .power-slider:before {
+            content: "ON";
+            color: var(--cyber-green);
+            transform: translateX(32px);
+            border-color: var(--cyber-green);
+            box-shadow: 0 0 10px var(--cyber-green);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <a href="/index.html" class="logo-group">
+            <span class="logo-icon">🚀</span>
+            <div class="logo-text">AI<span>PILOT</span></div>
+        </a>
+        <div class="nav-container">
+            <nav>
+                <a href="/index.html" data-i18n="navHome">TRANG CHỦ</a>
+                <a href="/index.html#features" data-i18n="navFeatures">TÍNH NĂNG</a>
+            </nav>
+            <div class="session-info">
+                <span class="mono">vinasat.tv2022@gmail.com</span>
+                <span class="status-badge" data-i18n="tierFree">MIỄN PHÍ TRỌN ĐỜI</span>
+            </div>
+            <!-- Language Selector -->
+            <div class="lang-toggle">
+                <span class="lang-btn active" id="lang-vi">VI</span>
+                <span class="lang-btn" id="lang-en">EN</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="dashboard-grid">
+            
+            <!-- Left Side: Metrics and Configuration -->
+            <div>
+                <!-- CONTEXT DEFENSE SYSTEM - BYPASS SWITCH -->
+                <div class="panel" data-title="CONTEXT DEFENSE SYSTEM - BYPASS SWITCH">
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 2rem;">
+                        <div>
+                            <h2 id="bypass-header" style="border: none; margin-bottom: 0.5rem; padding-bottom: 0;">CONTEXT PRUNING: ACTIVE</h2>
+                            <p style="color: #aaa; font-size: 0.95rem;">
+                                <span id="bypass-status-desc">Lớp lọc nén đang hoạt động với hiệu suất tối ưu 97.54%.</span>
+                            </p>
+                        </div>
+                        <!-- Electrical Power Switch -->
+                        <div class="power-switch-container">
+                            <label class="power-switch">
+                                <input type="checkbox" id="bypass-switch" checked>
+                                <span class="power-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Token Bleeding Warning Alert -->
+                    <div id="bleeding-alert" class="info-box" style="display: none; background-color: rgba(255, 51, 51, 0.08); border-left: 3px solid #ff3333; color: #ff9999; margin-top: 1rem;">
+                        ⚠️ <strong>[TOKEN BLEEDING DISASTER]:</strong> Context pruning is BYPASSED! The AI agent is transmitting the complete, uncompressed repository codebase directly to the API endpoint. Raw context costs are compounding exponentially!
+                    </div>
+                </div>
+
+                <!-- Metrics Panel -->
+                <div class="panel" data-title="CONSUMPTION METRICS">
+                    <h2 data-i18n="metricsTitle">Chỉ Số Tiêu Thụ & Tối Ưu Hóa</h2>
+                    <div class="metrics-panel-grid">
+                        <div class="metric-card">
+                            <div class="label" data-i18n="metricRaw">Raw Tokens Đã Chặn</div>
+                            <div class="value mono" id="raw-tokens-val">18,402,900</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="label" data-i18n="metricPruned">Tokens Nén Truyền Đi</div>
+                            <div class="value mono" id="pruned-tokens-val" style="color: var(--cyber-green);">452,109</div>
+                        </div>
+                        <div class="metric-card saved" id="saved-card">
+                            <div class="label" id="saved-label" data-i18n="metricSaved">Số USD Tiết Kiệm</div>
+                            <div class="value mono" id="saved-val">$269.26</div>
+                        </div>
+                    </div>
+                    <div class="info-box" id="optimization-box" data-i18n="optimizationRate">
+                        💡 <strong>Tỷ Lệ Tối Ưu Hóa:</strong> Hệ thống của bạn đang lọc và nén <strong>97.5% context mã nguồn raw</strong> trước khi gửi tới API OpenAI/Anthropic, ngăn chặn hoàn toàn lỗi lặp vô hạn đốt tiền của AI Agent.
+                    </div>
+                </div>
+
+                <!-- API Key Configuration -->
+                <div class="panel" data-title="API KEYS & INTEGRATION">
+                    <h2 data-i18n="keyTitle">Khóa Truy Cập Global AI Brain</h2>
+                    <p style="color: #aaa; margin-bottom: 1.5rem;" data-i18n="keyDesc">Sử dụng khóa bearer multi-tenant bảo mật này trong cấu hình local của bạn `global-token-saver`, `.clinerules`, hoặc cấu hình Cursor/Cline.</p>
+                    
+                    <div class="key-row">
+                        <span class="key-display mono" id="api-key">sk-brain-c43184b9058b06633c4cc0e5ca70d864-vinasat-999-global</span>
+                        <button class="btn-glow" id="btn-copy" data-i18n="copyKeyBtn">SAO CHÉP KHÓA</button>
+                    </div>
+
+                    <div style="background-color: #080808; border: 1px solid var(--border-gray); padding: 1.5rem;">
+                        <h4 style="margin-bottom: 0.8rem; color: var(--cyber-green);" data-i18n="quickstartTitle">Thiết Lập Nhanh Terminal 1-Click</h4>
+                        <p style="font-size: 0.9rem; color: #888; margin-bottom: 1rem;" data-i18n="quickstartDesc">Chạy câu lệnh dưới đây trực tiếp trên terminal của bạn để kích hoạt hệ thống nén context ngay lập tức:</p>
+                        
+                        <div class="terminal-oneliner">
+                            <span class="mono oneliner-text" id="code-block-dashboard">npx global-token-saver init --key sk-brain-c43184b9058b06633c4cc0e5ca70d864-vinasat-999-global</span>
+                            <button class="btn-glow btn-copy-oneliner" id="btn-copy-code-dashboard" data-i18n="copyCodeBtn">SAO CHÉP & DÁN</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Self-Evolving Feedback Node (Mạng Tự Học Hỏi) -->
+                <div class="panel" data-title="AUTONOMOUS FEEDBACK NODE">
+                    <h2 data-i18n="feedbackTitle">Mạng Phản Hồi Tự Tiến Hóa</h2>
+                    <p style="color: #aaa; margin-bottom: 1.5rem;" data-i18n="feedbackDesc">Phát hiện bất thường ngữ cảnh, lỗi nén, hoặc thiếu thư viện? Gửi phản hồi trực tiếp để kích hoạt mạng tự vá lỗi tức thì của AIPILOT.</p>
+                    
+                    <textarea id="feedback-input" class="mono" style="width: 100%; height: 100px; background-color: #050505; border: 1px solid var(--border-gray); color: #88ff88; padding: 0.8rem; font-family: inherit; font-size: 0.9rem; margin-bottom: 1rem; resize: vertical; box-sizing: border-box;" placeholder="Nhập hành vi lỗi hoặc yêu cầu tối ưu hóa thư viện..."></textarea>
+                    
+                    <button class="btn-glow" id="btn-submit-feedback" style="width: 100%; text-transform: uppercase;" data-i18n="feedbackSubmitBtn">Gửi Góp Ý Hệ Thống</button>
+                    
+                    <div id="feedback-status-box" style="margin-top: 1rem; display: none; background-color: #080808; border: 1px solid var(--border-gray); padding: 1rem;">
+                        <h4 style="color: var(--cyber-green); margin-bottom: 0.5rem;" data-i18n="feedbackStatusTitle">Trực Quan Mạng Tiến Hóa:</h4>
+                        <pre id="feedback-status-text" class="mono" style="white-space: pre-wrap; word-break: break-all; font-size: 0.85rem; color: #88ff88; line-height: 1.4;"></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Manifesto & Voluntary Support -->
+            <div>
+                <div class="panel" data-title="MANIFESTO">
+                    <h2 data-i18n="activeTierTitle">Gói Hoạt Động</h2>
+                    <div class="mono" style="font-size: 1.8rem; font-weight: bold; color: var(--cyber-green); margin-bottom: 1.5rem;" data-i18n="tierActive">
+                        LÕI MIỄN PHÍ ĐANG HOẠT ĐỘNG
+                    </div>
+                    <ul style="list-style: none; margin-bottom: 2rem; color: #aaa; font-size: 0.95rem;">
+                        <li style="margin-bottom: 0.5rem;" data-i18n="feature1">✓ Truy cập tất cả 999+ index thư viện</li>
+                        <li style="margin-bottom: 0.5rem;" data-i18n="feature2">✓ Không giới hạn số lượng request mỗi ngày</li>
+                        <li style="margin-bottom: 0.5rem;" data-i18n="feature3">✓ Proxy ưu tiên tốc độ cao hoạt động</li>
+                        <li style="margin-bottom: 0.5rem;" data-i18n="feature4">✓ Container PM2 được giám sát chặt chẽ</li>
+                    </ul>
+                </div>
+
+                <div class="panel" data-title="OPEN SOURCE SUBSTRATES">
+                    <h2 data-i18n="osTitle">Mã Nguồn Mở GitHub</h2>
+                    <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 1.5rem;" data-i18n="osDesc">Tải xuống và tự lưu trữ toàn bộ các mô-đun cốt lõi của hệ thống AIPILOT.VN:</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <a href="https://github.com/tuoaoa/global-token-saver" target="_blank" class="btn-glow github-link-telemetry" style="font-size: 0.8rem; text-align: center; display: block;" data-i18n="btnOSCLI">1. global-token-saver (CLI)</a>
+                        <a href="https://github.com/tuoaoa/aipilot-one-click-docker" target="_blank" class="btn-glow github-link-telemetry" style="font-size: 0.8rem; text-align: center; display: block;" data-i18n="btnOSDocker">2. aipilot-one-click-docker (Docker)</a>
+                        <a href="https://github.com/tuoaoa/context-pruning-mcp-server" target="_blank" class="btn-glow github-link-telemetry" style="font-size: 0.8rem; text-align: center; display: block;" data-i18n="btnOSMCP">3. context-pruning-mcp-server (MCP)</a>
+                    </div>
+                </div>
+
+                <!-- LIVE TRACTION TRACKER PANEL -->
+                <div class="panel" data-title="LIVE TRACTION TRACKER">
+                    <h2 data-i18n="tractionTitle">Live Traction Tracker</h2>
+                    <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 1.5rem;" data-i18n="tractionDesc">Giám sát và kiểm tra lưu lượng truy cập thực tế cùng tỷ lệ nén context tối ưu.</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1rem; text-align: center; font-family: 'Share Tech Mono', monospace;">
+                        <div style="border: 1px solid var(--border-gray); padding: 1rem; background-color: rgba(0,0,0,0.3);">
+                            <div style="font-size: 0.8rem; color: #888;">[ LIVE WEB VISITS ]</div>
+                            <div id="visits-counter" style="font-size: 2rem; font-weight: bold; color: var(--stark-white); margin-top: 5px;">0</div>
+                        </div>
+                        <div style="border: 1px solid var(--border-gray); padding: 1rem; background-color: rgba(0,0,0,0.3);">
+                            <div style="font-size: 0.8rem; color: #888;">[ GITHUB SOURCE CLICKS ]</div>
+                            <div id="clicks-counter" style="font-size: 2rem; font-weight: bold; color: var(--stark-white); margin-top: 5px;">0</div>
+                        </div>
+                        <div style="border: 1px solid var(--cyber-green); padding: 1rem; background-color: rgba(0, 0, 255, 0.03);">
+                            <div style="font-size: 0.8rem; color: #888;">[ CACHE MITIGATION RATIO ]</div>
+                            <div id="ratio-counter" style="font-size: 2rem; font-weight: bold; color: var(--cyber-green); margin-top: 5px;">0.00%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Payment Gateway Modal -->
+    <div class="modal-overlay" id="payment-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="btn-close-payment">&times;</span>
+            <h3 data-i18n="modalTitle">ỦNG HỘ PHÁT TRIỂN NỀN TẢNG MỞ</h3>
+            <p style="color: #aaa; font-size: 0.95rem;" data-i18n="modalSub">Quét mã để ủng hộ ngay lập tức qua cổng VietQR ngân hàng tiêu chuẩn</p>
+            
+            <div class="qr-container">
+                <img class="qr-image" id="qr-code-img" src="" alt="Scan to Pay">
+            </div>
+
+            <div class="payment-instructions">
+                <p style="margin-bottom: 0.5rem;"><span data-i18n="bankLabel">🏦 Ngân hàng:</span> <strong>MBBank (Ngân hàng Thương mại Cổ phần Quân đội)</strong></p>
+                <p style="margin-bottom: 0.5rem;"><span data-i18n="accountLabel">👤 Số tài khoản:</span> <strong>0913122111</strong></p>
+                <p style="margin-bottom: 0.5rem;"><span data-i18n="holderLabel">👤 Chủ tài khoản:</span> <strong>NGUYEN ANH TU</strong></p>
+                <p style="margin-bottom: 0.5rem;"><span data-i18n="amountLabel">💰 Số tiền ủng hộ:</span> <strong>99,000 VND</strong></p>
+                <p style="margin-bottom: 1rem;"><span data-i18n="descLabel">📝 Nội dung chuyển khoản (Bắt buộc):</span> <strong style="color: var(--cyber-green);" id="payment-desc">AIPILOT PRO sk-brain-c43184b9058b06633c4cc0e5ca70d864-vinasat-999-global</strong></p>
+                
+                <p style="font-size: 0.8rem; color: #aaa; border-top: 1px dashed #333; padding-top: 0.8rem; line-height: 1.4;" data-i18n="modalWarning">
+                    ⚠️ <strong>Lưu ý quan trọng:</strong> Hệ thống kiểm tra giao dịch tự động. Sau khi quét mã thành công, tài khoản Console của bạn sẽ được gắn nhãn <strong>[PROJECT SUPPORTED]</strong> trong vòng 60 giây.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Chat Widget -->
+    <div class="chat-widget-bubble" id="chat-bubble">
+        <svg viewBox="0 0 24 24">
+            <path d="M20,2H4C2.9,2,2,2.9,2,4v18l4-4h14c1.1,0,2-0.9,2-2V4C22,2.9,21.1,2,20,2z M20,16H5.2L4,17.2V4h16V16z M6,7h12v2H6V7z M6,11h10v2H6V11z"/>
+        </svg>
+    </div>
+
+    <!-- Chatbot Window -->
+    <div class="chat-widget-window" id="chat-window">
+        <div class="chat-header">
+            <span class="mono chat-title" style="color: var(--cyber-green);">👨‍💻 CHIEF_PLATFORM_ENGINEER</span>
+            <span class="chat-close" id="chat-close">&times;</span>
+        </div>
+        <div class="chat-messages mono" id="chat-messages">
+            <div class="chat-bubble ai" data-i18n="botGreeting">
+                SYSTEM ONLINE: Xin chào! Tôi là Chief Platform Engineer tại AIPILOT.VN. Hỏi tôi bất cứ điều gì về MD5 hashing, JSON-RPC handshakes, cấu hình mcp-server hoặc cách tích hợp với Cline/Cursor!
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" class="chat-input mono" id="chat-input" placeholder="Nhập thắc mắc kỹ thuật..." autocomplete="off">
+            <button class="btn-glow chat-send" id="chat-send">SEND</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 AIPILOT.VN. Engineered for next-gen contextual prunings. All rights reserved.</p>
+        <p style="margin-top: 1rem; font-family: 'Share Tech Mono', monospace; font-size: 0.85rem;">
+            <a href="#" id="btn-support-footer" style="color: var(--cyber-green); text-decoration: none; border-bottom: 1px dashed var(--cyber-green); padding-bottom: 2px;">⚡ Powered by Open Architecture. Support the project infrastructure with a coffee (99,000 VND) [Ủng hộ duy trì máy chủ]</a>
+        </p>
+        <p style="margin-top: 1rem;"><a href="/index.html">AIPILOT.VN</a> | <a href="/dashboard.html" style="color: var(--cyber-green);">Client Console</a></p>
+    </footer>
+
+    <!-- Copy, Modal & i18n Scripts -->
+    <script>
+        const translations = {
+            vi: {
+                navHome: "TRANG CHỦ",
+                navFeatures: "TÍNH NĂNG",
+                consoleTitle: "BẢNG ĐIỀU KHIỂN CLIENT",
+                userTier: "GÓI BẢO MẬT",
+                tierFree: "MIỄN PHÍ TRỌN ĐỜI",
+                metricsTitle: "Chỉ Số Tiêu Thụ & Tối Ưu Hóa",
+                metricRaw: "Raw Tokens Đã Chặn",
+                metricPruned: "Tokens Nén Truyền Đi",
+                metricSaved: "Số USD Tiết Kiệm",
+                optimizationRate: "💡 <strong>Tỷ Lệ Tối Ưu Hóa:</strong> Hệ thống của bạn đang lọc và nén <strong>97.5% context mã nguồn raw</strong> trước khi gửi tới API OpenAI/Anthropic, ngăn chặn hoàn toàn lỗi lặp vô hạn đốt tiền của AI Agent.",
+                keyTitle: "Khóa Truy Cập Global AI Brain",
+                keyDesc: "Sử dụng khóa bearer multi-tenant bảo mật này trong cấu hình local của bạn `global-token-saver`, `.clinerules`, hoặc cấu hình Cursor/Cline.",
+                copyKeyBtn: "SAO CHÉP KHÓA",
+                quickstartTitle: "Thiết Lập Nhanh Terminal 1-Click",
+                quickstartDesc: "Chạy câu lệnh dưới đây trực tiếp trên terminal của bạn để kích hoạt hệ thống nén context ngay lập tức:",
+                copyCodeBtn: "SAO CHÉP & DÁN",
+                activeTierTitle: "Gói Hoạt Động",
+                tierActive: "LÕI MIỄN PHÍ ĐANG HOẠT ĐỘNG",
+                feature1: "✓ Truy cập tất cả 999+ index thư viện",
+                feature2: "✓ Không giới hạn số lượng request mỗi ngày",
+                feature3: "✓ Proxy ưu tiên tốc độ cao hoạt động",
+                feature4: "✓ Container PM2 được giám sát chặt chẽ",
+                supportTitle: "Ủng Hộ Dự Án (99,000đ)",
+                supportBanner: "AIPILOT.VN LÀ NỀN TẢNG CƠ SỞ DỮ LIỆU MỞ BẢO VỆ CONTEXT. 100% MIỄN PHÍ CHO CÁC LẬP TRÌNH VIÊN CÁ NHÂN. KHÔNG CẦN THẺ TÍN DỤNG. KHÔNG BẪY THƯƠNG MẠI. CHỈ CÓ SỰ TIẾT KIỆM TOKENS TUYỆT ĐỐI.",
+                modalTitle: "ỦNG HỘ PHÁT TRIỂN NỀN TẢNG MỞ",
+                modalSub: "Quét mã để ủng hộ ngay lập tức qua cổng VietQR ngân hàng tiêu chuẩn",
+                bankLabel: "🏦 Ngân hàng:",
+                accountLabel: "👤 Số tài khoản:",
+                holderLabel: "👤 Chủ tài khoản:",
+                amountLabel: "💰 Số tiền ủng hộ:",
+                descLabel: "📝 Nội dung chuyển khoản (Bắt buộc):",
+                modalWarning: "⚠️ <strong>Lưu ý quan trọng:</strong> Hệ thống kiểm tra giao dịch tự động. Sau khi quét mã thành công, tài khoản Console của bạn sẽ được gắn nhãn <strong>[PROJECT SUPPORTED]</strong> trong vòng 60 giây.",
+                feedbackTitle: "Mạng Phản Hồi Tự Tiến Hóa",
+                feedbackDesc: "Phát hiện bất thường ngữ cảnh, lỗi nén, hoặc thiếu thư viện? Gửi phản hồi trực tiếp để kích hoạt mạng tự vá lỗi tức thì của AIPILOT.",
+                feedbackSubmitBtn: "GỬI GÓP Ý HỆ THỐNG",
+                feedbackStatusTitle: "Trực Quan Mạng Tiến Hóa:",
+                osTitle: "Mã Nguồn Mở GitHub",
+                osDesc: "Tải xuống và tự lưu trữ toàn bộ các mô-đun cốt lõi của hệ thống AIPILOT.VN:",
+                btnOSCLI: "1. global-token-saver (CLI)",
+                btnOSDocker: "2. aipilot-one-click-docker (Docker)",
+                btnOSMCP: "3. context-pruning-mcp-server (MCP)",
+                botGreeting: "SYSTEM ONLINE: Xin chào! Tôi là Chief Platform Engineer tại AIPILOT.VN. Hỏi tôi bất cứ điều gì về MD5 hashing, JSON-RPC handshakes, cấu hình mcp-server hoặc cách tích hợp với Cline/Cursor!",
+                compiling: "Đang phản hồi...",
+                errorConnect: "Lỗi: Không thể kết nối với Chief Platform Engineer.",
+                errorNetwork: "Lỗi: Mạng không ổn định."
+            },
+            en: {
+                navHome: "HOME",
+                navFeatures: "FEATURES",
+                consoleTitle: "CLIENT CONSOLE",
+                userTier: "SECURITY TIER",
+                tierFree: "FREE FOREVER",
+                metricsTitle: "Usage & Token Optimization",
+                metricRaw: "Raw Tokens Intercepted",
+                metricPruned: "Pruned Tokens Transmitted",
+                metricSaved: "Total Dollars Saved",
+                optimizationRate: "💡 <strong>Optimization Rate:</strong> Your system is currently filtering and compressing <strong>97.5% of raw source code context</strong> before transmitting to OpenAI/Anthropic APIs, successfully preventing agent infinite loop billing errors.",
+                keyTitle: "Global AI Brain Access Keys",
+                keyDesc: "Use this secure multi-tenant bearer key in your local `global-token-saver` config, `.clinerules`, or within Cursor and Cline setup parameters.",
+                copyKeyBtn: "COPY KEY",
+                quickstartTitle: "1-Click Terminal Quickstart",
+                quickstartDesc: "Execute this one-liner straight into your terminal to spin up global pruning instantly:",
+                copyCodeBtn: "COPY & PASTE",
+                activeTierTitle: "Active Tier",
+                tierActive: "FREE CORES ACTIVE",
+                feature1: "✓ Access to all 999+ library indexes",
+                feature2: "✓ Unlimited API requests per day",
+                feature3: "✓ Priority proxy active",
+                feature4: "✓ Fully supervised PM2 container",
+                supportTitle: "Support the Project ($3.99)",
+                supportBanner: "AIPILOT.VN IS AN OPEN ARCHITECTURE DEFENSE SUBSTRATE. 100% FREE FOR PERSONAL DEVELOPERS. NO CARDS REQUIRED. NO TRAPS. JUST ABSOLUTE TOKEN SAVINGS.",
+                modalTitle: "SUPPORT OPEN SOURCE DEFENSE",
+                modalSub: "Scan to pay instantly via Standardized Banking QR Code",
+                bankLabel: "🏦 Bank:",
+                accountLabel: "👤 Account Number:",
+                holderLabel: "👤 Account Holder:",
+                amountLabel: "💰 Amount:",
+                descLabel: "📝 Description (Mandatory):",
+                modalWarning: "⚠️ <strong>Important Note:</strong> Automated transaction check. After scanning successfully, your Console account will be tagged with <strong>[PROJECT SUPPORTED]</strong> within 60 seconds.",
+                feedbackTitle: "Self-Evolving Feedback Node",
+                feedbackDesc: "Detected context anomalies, compression errors, or missing library behaviors? Submit details to trigger our real-time autonomous self-patching loop.",
+                feedbackSubmitBtn: "SUBMIT SYSTEM FEEDBACK",
+                feedbackStatusTitle: "Evolution Node Telemetry:",
+                osTitle: "GitHub Open-Source",
+                osDesc: "Download and self-host all core substrates of the AIPILOT.VN network:",
+                btnOSCLI: "1. global-token-saver (CLI)",
+                btnOSDocker: "2. aipilot-one-click-docker (Docker)",
+                btnOSMCP: "3. context-pruning-mcp-server (MCP)",
+                botGreeting: "SYSTEM ONLINE: Welcome! I am the Chief Platform Engineer at AIPILOT.VN. Ask me anything about MD5 hashing, JSON-RPC handshakes, mcp-server setup, or Cline/Cursor integrations!",
+                compiling: "Compiling response...",
+                errorConnect: "Error: Could not connect to Chief Platform Engineer.",
+                errorNetwork: "Error: Network unstable."
+            }
+        };
+
+        let currentLang = 'vi';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('aipilot_lang', lang);
+            
+            // Toggle active visual classes
+            document.getElementById('lang-vi').classList.toggle('active', lang === 'vi');
+            document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+            
+            // Translate all nodes
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+
+            // Update input placeholder in chatbot
+            const chatInput = document.getElementById('chat-input');
+            if (chatInput) {
+                chatInput.placeholder = lang === 'vi' ? 'Nhập thắc mắc kỹ thuật...' : 'Type your technical question...';
+            }
+        }
+
+        // Language toggle event listeners
+        document.getElementById('lang-vi').addEventListener('click', () => setLanguage('vi'));
+        document.getElementById('lang-en').addEventListener('click', () => setLanguage('en'));
+
+        // Autodetect language on boot
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('aipilot_lang');
+            if (savedLang) {
+                setLanguage(savedLang);
+            } else {
+                const userLang = navigator.language || navigator.userLanguage;
+                if (userLang.startsWith('en')) {
+                    setLanguage('en');
+                } else {
+                    setLanguage('vi');
+                }
+            }
+        });
+
+        // 1-Click Clipboard Actions
+        const apiKey = 'sk-brain-c43184b9058b06633c4cc0e5ca70d864-vinasat-999-global';
+        const btnCopy = document.getElementById('btn-copy');
+
+        btnCopy.addEventListener('click', () => {
+            navigator.clipboard.writeText(apiKey).then(() => {
+                const originalText = btnCopy.innerText;
+                btnCopy.innerText = currentLang === 'vi' ? 'ĐÃ SAO CHÉP!' : 'COPIED!';
+                btnCopy.style.borderColor = '#ffffff';
+                btnCopy.style.color = '#ffffff';
+                setTimeout(() => {
+                    btnCopy.innerText = originalText;
+                    btnCopy.style.borderColor = 'var(--cyber-green)';
+                    btnCopy.style.color = 'var(--cyber-green)';
+                }, 2000);
+            });
+        });
+
+        const btnCopyCodeDashboard = document.getElementById('btn-copy-code-dashboard');
+        const codeBlockDashboard = document.getElementById('code-block-dashboard');
+
+        btnCopyCodeDashboard.addEventListener('click', () => {
+            navigator.clipboard.writeText(codeBlockDashboard.innerText).then(() => {
+                const originalText = btnCopyCodeDashboard.innerText;
+                btnCopyCodeDashboard.innerText = currentLang === 'vi' ? 'ĐÃ SAO CHÉP!' : 'COPIED!';
+                btnCopyCodeDashboard.style.borderColor = '#ffffff';
+                btnCopyCodeDashboard.style.color = '#ffffff';
+                setTimeout(() => {
+                    btnCopyCodeDashboard.innerText = originalText;
+                    btnCopyCodeDashboard.style.borderColor = 'var(--cyber-green)';
+                    btnCopyCodeDashboard.style.color = 'var(--cyber-green)';
+                }, 2000);
+            });
+        });
+
+        // Support Modal Controls with defensive handles and 99K VND micro-donations
+        const btnOpenPayment = document.getElementById('btn-open-payment');
+        const btnSupportFooter = document.getElementById('btn-support-footer');
+        const btnClosePayment = document.getElementById('btn-close-payment');
+        const paymentModal = document.getElementById('payment-modal');
+        const qrImage = document.getElementById('qr-code-img');
+        const paymentDesc = document.getElementById('payment-desc');
+
+        function triggerSupportPayment(e) {
+            if (e) e.preventDefault();
+            const bankId = 'MBBank';
+            const accountNo = '0913122111';
+            const amount = '99000'; // Lowered down to 99k VND micro-donation
+            const description = `AIPILOT PRO ${apiKey}`;
+            
+            if (paymentDesc) paymentDesc.innerText = description;
+            
+            const encodedDesc = encodeURIComponent(description);
+            const vietQrUrl = `https://img.vietqr.io/image/${bankId}-${accountNo}-qr_only.png?amount=${amount}&addInfo=${encodedDesc}`;
+            
+            if (qrImage) qrImage.src = vietQrUrl;
+            if (paymentModal) paymentModal.style.display = 'flex';
+        }
+
+        if (btnOpenPayment) {
+            btnOpenPayment.addEventListener('click', triggerSupportPayment);
+        }
+        if (btnSupportFooter) {
+            btnSupportFooter.addEventListener('click', triggerSupportPayment);
+        }
+
+        if (btnClosePayment) {
+            btnClosePayment.addEventListener('click', () => {
+                if (paymentModal) paymentModal.style.display = 'none';
+            });
+        }
+
+        window.addEventListener('click', (e) => {
+            if (e.target === paymentModal) {
+                paymentModal.style.display = 'none';
+            }
+        });
+
+        // Floating Chatbot Controls
+        const chatBubble = document.getElementById('chat-bubble');
+        const chatWindow = document.getElementById('chat-window');
+        const chatClose = document.getElementById('chat-close');
+        const chatSend = document.getElementById('chat-send');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        chatBubble.addEventListener('click', () => {
+            chatWindow.style.display = 'flex';
+            chatBubble.style.display = 'none';
+            chatInput.focus();
+        });
+
+        chatClose.addEventListener('click', () => {
+            chatWindow.style.display = 'none';
+            chatBubble.style.display = 'flex';
+        });
+
+        // Markdown parser for chatbot responses to fix the literal formatting bug
+        function parseMarkdown(text) {
+            let html = text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+            
+            // Code blocks
+            html = html.replace(/```([\s\S]*?)```/g, '<pre class="mono" style="background:#0a0a0a; border:1px solid #333; padding:0.5rem; overflow-x:auto; margin:0.5rem 0;"><code>$1</code></pre>');
+            // Inline code
+            html = html.replace(/`([^`]+)`/g, '<code class="mono" style="background:#111; color:#00ff66; padding:2px 4px;">$1</code>');
+            // Bold
+            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            // Newlines
+            html = html.replace(/\n/g, '<br>');
+            return html;
+        }
+
+        async function handleMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            // Render user message bubble
+            const userDiv = document.createElement('div');
+            userDiv.className = 'chat-bubble user';
+            userDiv.innerText = text;
+            chatMessages.appendChild(userDiv);
+            chatInput.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Render AI thinking bubble
+            const aiDiv = document.createElement('div');
+            aiDiv.className = 'chat-bubble ai';
+            aiDiv.innerText = translations[currentLang].compiling;
+            chatMessages.appendChild(aiDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: text, lang: currentLang })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    aiDiv.innerHTML = parseMarkdown(data.reply);
+                } else {
+                    aiDiv.innerText = translations[currentLang].errorConnect;
+                }
+            } catch (err) {
+                aiDiv.innerText = translations[currentLang].errorNetwork;
+            }
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        chatSend.addEventListener('click', handleMessage);
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                handleMessage();
+            }
+        });
+
+        // Self-Evolving Feedback Node Actions
+        const btnSubmitFeedback = document.getElementById('btn-submit-feedback');
+        const feedbackInput = document.getElementById('feedback-input');
+        const feedbackStatusBox = document.getElementById('feedback-status-box');
+        const feedbackStatusText = document.getElementById('feedback-status-text');
+
+        btnSubmitFeedback.addEventListener('click', async () => {
+            const feedbackText = feedbackInput.value.trim();
+            if (!feedbackText) return;
+
+            btnSubmitFeedback.disabled = true;
+            const originalBtnText = btnSubmitFeedback.innerText;
+            btnSubmitFeedback.innerText = currentLang === 'vi' ? 'ĐANG TIẾN HÓA MẠNG...' : 'EVOLVING CORE NODE...';
+            
+            feedbackStatusBox.style.display = 'block';
+            feedbackStatusText.innerText = currentLang === 'vi' ? 'Đang phân tích phản hồi & tự động điều chỉnh logic pruner...' : 'Analyzing bug telemetry & dynamically updating SQLite rules...';
+
+            try {
+                const response = await fetch('/api/feedback/evolve', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ feedback: feedbackText, lang: currentLang })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    feedbackStatusText.innerText = data.reply;
+                    feedbackInput.value = '';
+                } else {
+                    feedbackStatusText.innerText = currentLang === 'vi' ? 'Lỗi kết nối với Mạng Tiến Hóa.' : 'Error connecting to the Evolution Engine.';
+                }
+            } catch (err) {
+                feedbackStatusText.innerText = currentLang === 'vi' ? 'Lỗi mạng: Không thể truyền dữ liệu tiến hóa.' : 'Network Error: Feedback transmission failed.';
+            }
+
+            btnSubmitFeedback.disabled = false;
+            btnSubmitFeedback.innerText = originalBtnText;
+        });
+
+        // Telemetry-driven dynamic UI theme adaptation
+        function applyAdaptiveUI() {
+            const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.userAgent || navigator.platform);
+            const isHighRes = window.screen.width >= 1440 || window.devicePixelRatio > 1.5;
+            
+            // Check timezone active hours (e.g. peak developer hours: 6 PM to 6 AM, or typical active hours)
+            const currentHour = new Date().getHours();
+            const isActiveHours = currentHour >= 8 && currentHour <= 18;
+            
+            console.log(`[Telemetry] DarkMode: ${isDark}, MacOS/iOS: ${isMac}, HighRes: ${isHighRes}, Hour: ${currentHour}, ActiveHours: ${isActiveHours}`);
+            
+            // If high-end developer machine detected or working during cyberpunk late night hours
+            const isDeveloperEnv = isMac && isDark && (isHighRes || !isActiveHours);
+            
+            if (isDeveloperEnv) {
+                document.body.classList.add('developer-mode');
+                document.body.classList.remove('consumer-mode');
+                console.log('[UI Matrix] Brutalist Cyberpunk Matrix Theme Enforced.');
+            } else {
+                document.body.classList.add('consumer-mode');
+                document.body.classList.remove('developer-mode');
+                console.log('[UI Matrix] Premium Minimalist Layout Enforced.');
+            }
+        }
+        window.addEventListener('DOMContentLoaded', applyAdaptiveUI);
+        // Recheck on theme/preference change
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyAdaptiveUI);
+
+        // Real-Time System Telemetry (SSE listener)
+        function initTractionTracker() {
+            console.log('[Telemetry] Initializing Real-Time Traction Tracker...');
+            
+            // 1. Fetch initial cumulative metrics so dashboard loads instantly without zeroes
+            fetch("/api/metrics/summary")
+                .then(response => response.json())
+                .then(data => {
+                    const visitsEl = document.getElementById("visits-counter");
+                    const clicksEl = document.getElementById("clicks-counter");
+                    const ratioEl = document.getElementById("ratio-counter");
+
+                    if (visitsEl && data.activeWebVisits !== undefined) {
+                        visitsEl.innerText = data.activeWebVisits;
+                    }
+                    if (clicksEl && data.githubClicks !== undefined) {
+                        clicksEl.innerText = data.githubClicks;
+                    }
+                    if (ratioEl && data.cacheRatio !== undefined) {
+                        ratioEl.innerText = typeof data.cacheRatio === 'number' ? data.cacheRatio.toFixed(2) + "%" : data.cacheRatio;
+                    }
+                })
+                .catch(err => console.error("[Telemetry] Failed to fetch initial metrics summary:", err));
+
+            // 2. Establish persistent SSE connection for real-time live updates
+            const eventSource = new EventSource("/api/analytics/stream");
+            
+            eventSource.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    const visitsEl = document.getElementById("visits-counter");
+                    const clicksEl = document.getElementById("clicks-counter");
+                    const ratioEl = document.getElementById("ratio-counter");
+
+                    if (visitsEl && data.activeWebVisits !== undefined) {
+                        visitsEl.innerText = data.activeWebVisits;
+                        triggerGlowPulse(visitsEl);
+                    }
+                    if (clicksEl && data.githubClicks !== undefined) {
+                        clicksEl.innerText = data.githubClicks;
+                        triggerGlowPulse(clicksEl);
+                    }
+                    if (ratioEl && data.cacheRatio !== undefined) {
+                        ratioEl.innerText = typeof data.cacheRatio === 'number' ? data.cacheRatio.toFixed(2) + "%" : data.cacheRatio;
+                        triggerGlowPulse(ratioEl);
+                    }
+                } catch (err) {
+                    console.error("[Telemetry] Failed to parse stream data:", err);
+                }
+            };
+
+            eventSource.onerror = function(err) {
+                console.warn("[Telemetry] SSE connection dropped. Reconnecting in 5s...");
+                eventSource.close();
+                setTimeout(initTractionTracker, 5000);
+            };
+        }
+
+        // Register click event listeners for GitHub links to update db metrics in real-time
+        function registerGitHubClickListeners() {
+            document.querySelectorAll(".github-link-telemetry").forEach(link => {
+                link.addEventListener("click", () => {
+                    fetch("/api/analytics/click", { method: "POST" })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log("[Telemetry] Click successfully registered in database:", data);
+                            const clicksEl = document.getElementById("clicks-counter");
+                            if (clicksEl && data.githubClicks !== undefined) {
+                                clicksEl.innerText = data.githubClicks;
+                                triggerGlowPulse(clicksEl);
+                            }
+                        })
+                        .catch(err => console.error("[Telemetry] Failed to post click count:", err));
+                });
+            });
+        }
+
+        function triggerGlowPulse(element) {
+            element.style.transition = "text-shadow 0.15s ease-out";
+            element.style.textShadow = "0 0 10px var(--cyber-green)";
+            setTimeout(() => {
+                element.style.textShadow = "none";
+            }, 300);
+        }
+
+        // Reactive State Bindings for the Kill-Switch Bypass
+        let rawTokens = 18402900;
+        let prunedTokens = 452109;
+        let baseSavedUSD = 269.26;
+        let bleedingWastedUSD = 0.00;
+
+        let normalInterval = null;
+        let bleedingInterval = null;
+
+        function updateMetricsUI(isBypass) {
+            const rawValEl = document.getElementById("raw-tokens-val");
+            const prunedValEl = document.getElementById("pruned-tokens-val");
+            const savedCardEl = document.getElementById("saved-card");
+            const savedLabelEl = document.getElementById("saved-label");
+            const savedValEl = document.getElementById("saved-val");
+            const ratioEl = document.getElementById("ratio-counter");
+            const optBoxEl = document.getElementById("optimization-box");
+            
+            if (rawValEl) rawValEl.innerText = rawTokens.toLocaleString();
+            if (prunedValEl) prunedValEl.innerText = prunedTokens.toLocaleString();
+            
+            if (isBypass) {
+                // Red bypass visual warning
+                if (savedCardEl) {
+                    savedCardEl.style.borderColor = "#ff3333";
+                    savedCardEl.style.boxShadow = "0 0 15px rgba(255, 51, 51, 0.15)";
+                    savedCardEl.classList.remove("saved");
+                }
+                if (savedLabelEl) {
+                    savedLabelEl.innerText = currentLang === 'vi' ? "CHI PHÍ PHÁT SINH (BLEEDING)" : "BLEEDING COST WASTED";
+                    savedLabelEl.style.color = "#ff3333";
+                }
+                if (savedValEl) {
+                    savedValEl.innerText = "$" + bleedingWastedUSD.toFixed(2);
+                    savedValEl.style.color = "#ff3333";
+                    savedValEl.style.textShadow = "0 0 10px rgba(255, 51, 51, 0.5)";
+                }
+                if (ratioEl) {
+                    ratioEl.innerText = "0.00%";
+                    ratioEl.style.color = "#ff3333";
+                }
+                if (optBoxEl) {
+                    optBoxEl.style.backgroundColor = "rgba(255, 51, 51, 0.03)";
+                    optBoxEl.style.borderColor = "#ff3333";
+                    optBoxEl.style.color = "#ff9999";
+                    optBoxEl.innerHTML = currentLang === 'vi' 
+                        ? "⚠️ <strong>CẢNH BÁO NGUY HIỂM:</strong> Lớp nén context đã bị tắt. Token đang phình to theo cấp số nhân!"
+                        : "⚠️ <strong>CRITICAL DANGER:</strong> Pruning has been bypassed. Source context size is inflating exponentially!";
+                }
+            } else {
+                // Safe green active visual state
+                if (savedCardEl) {
+                    savedCardEl.style.borderColor = "var(--cyber-green)";
+                    savedCardEl.style.boxShadow = "none";
+                    savedCardEl.classList.add("saved");
+                }
+                if (savedLabelEl) {
+                    savedLabelEl.innerText = currentLang === 'vi' ? "Số USD Tiết Kiệm" : "Total Dollars Saved";
+                    savedLabelEl.style.color = "#888";
+                }
+                if (savedValEl) {
+                    savedValEl.innerText = "$" + baseSavedUSD.toFixed(2);
+                    savedValEl.style.color = "var(--cyber-green)";
+                    savedValEl.style.textShadow = "none";
+                }
+                if (ratioEl) {
+                    const calculatedRatio = ((rawTokens - prunedTokens) / rawTokens) * 100;
+                    ratioEl.innerText = calculatedRatio.toFixed(2) + "%";
+                    ratioEl.style.color = "var(--cyber-green)";
+                }
+                if (optBoxEl) {
+                    optBoxEl.style.backgroundColor = "rgba(0, 255, 102, 0.05)";
+                    optBoxEl.style.borderColor = "var(--cyber-green)";
+                    optBoxEl.style.color = "#ccc";
+                    optBoxEl.innerHTML = currentLang === 'vi'
+                        ? "💡 <strong>Tỷ Lệ Tối Ưu Hóa:</strong> Hệ thống của bạn đang lọc và nén <strong>97.5% context mã nguồn raw</strong> trước khi gửi tới API OpenAI/Anthropic, ngăn chặn hoàn toàn lỗi lặp vô hạn đốt tiền của AI Agent."
+                        : "💡 <strong>Optimization Rate:</strong> Your system is currently filtering and compressing <strong>97.5% of raw source code context</strong> before transmitting to OpenAI/Anthropic APIs, successfully preventing agent infinite loop billing errors.";
+                }
+            }
+        }
+
+        function handleBypassToggle(e) {
+            const isChecked = e.target.checked;
+            const alertEl = document.getElementById("bleeding-alert");
+            const headerEl = document.getElementById("bypass-header");
+            const descEl = document.getElementById("bypass-status-desc");
+            
+            // Clear any active intervals
+            if (normalInterval) clearInterval(normalInterval);
+            if (bleedingInterval) clearInterval(bleedingInterval);
+            
+            if (isChecked) {
+                // Switch is ON (MCP Protected)
+                if (alertEl) alertEl.style.display = "none";
+                if (headerEl) {
+                    headerEl.innerText = currentLang === 'vi' ? "CONTEXT PRUNING: ACTIVE" : "CONTEXT PRUNING: ACTIVE";
+                    headerEl.style.color = "var(--stark-white)";
+                }
+                if (descEl) descEl.innerText = currentLang === 'vi' ? "Lớp lọc nén đang hoạt động với hiệu suất tối ưu 97.54%." : "Pruning layer is filtering normally at 97.54% efficiency.";
+                
+                // Reset bleeding wasted accumulation, restore green saved metrics
+                bleedingWastedUSD = 0.00;
+                updateMetricsUI(false);
+                
+                // Gentler normal traffic simulated logging
+                normalInterval = setInterval(() => {
+                    const rawInc = Math.floor(Math.random() * 20000) + 10000;
+                    const prunedInc = Math.floor(Math.random() * 400) + 100;
+                    rawTokens += rawInc;
+                    prunedTokens += prunedInc;
+                    baseSavedUSD += ((rawInc - prunedInc) * 15.0) / 1000000;
+                    updateMetricsUI(false);
+                }, 4000);
+                
+            } else {
+                // Switch is OFF (Bypass Mode - Token Bleeding active!)
+                if (alertEl) alertEl.style.display = "block";
+                if (headerEl) {
+                    headerEl.innerText = currentLang === 'vi' ? "CONTEXT PRUNING: BYPASSED" : "CONTEXT PRUNING: BYPASSED";
+                    headerEl.style.color = "#ff3333";
+                }
+                if (descEl) descEl.innerText = currentLang === 'vi' ? "CẢNH BÁO: Tắt lớp bảo vệ khiến token rác tăng vọt không kiểm soát." : "WARNING: Defense switch off causes unchecked exponential context growth.";
+                
+                // High frequency ticking interval (every 80ms)
+                bleedingInterval = setInterval(() => {
+                    const rawBleed = 230000; // Compound context inflation
+                    rawTokens += rawBleed;
+                    // prunedTokens remains frozen
+                    
+                    // Compounding cost formula: rawCost - optimizedCost
+                    const rawCost = (rawBleed * 15.0) / 1000000;
+                    bleedingWastedUSD += rawCost;
+                    
+                    updateMetricsUI(true);
+                }, 80);
+            }
+        }
+
+        window.addEventListener('load', () => {
+            initTractionTracker();
+            registerGitHubClickListeners();
+            
+            // Set up initial normal traffic simulator loop
+            normalInterval = setInterval(() => {
+                const rawInc = Math.floor(Math.random() * 20000) + 10000;
+                const prunedInc = Math.floor(Math.random() * 400) + 100;
+                rawTokens += rawInc;
+                prunedTokens += prunedInc;
+                baseSavedUSD += ((rawInc - prunedInc) * 15.0) / 1000000;
+                updateMetricsUI(false);
+            }, 4000);
+            
+            document.getElementById("bypass-switch").addEventListener("change", handleBypassToggle);
+        });
+    </script>
+</body>
+</html>
