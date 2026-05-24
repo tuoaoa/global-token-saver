@@ -1,0 +1,14 @@
+{
+  "name": "global-token-saver",
+  "version": "1.0.0",
+  "description": "Context Pruning CLI Utility for Global AI Brain (AIPILOT.VN)",
+  "main": "bin/index.js",
+  "bin": {
+    "global-token-saver": "./bin/index.js"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT"
+}
