@@ -1,103 +1,97 @@
-# global-token-saver 🚀
+# ⚡ AIPILOT: Persistent Failure Memory for AI Coding
 
-> **Bilingual:** [Tiếng Việt](#tiếng-việt) | [English](#english)
+> **VIETNAMESE VERSION BELOW / TIẾNG VIỆT BÊN DƯỚI**
+
+AIPILOT is **the local-first memory layer that stops AI coding agents from repeating the same debugging mistakes**. 
+
+Dedicated to the developer and Vibercode community, AIPILOT is a 100% free, open-source, offline-first workflow utility. It acts as a passive sidecar stream observer—capturing agent compilation/test failures, normalizes trace outputs into unique error signatures, and records the successful git diff patches that resolved them. 
+
+When your AI agent (like Cline, OpenHands, AutoGPT) hits the same error, AIPILOT prints a non-authoritative recovery guidance hint to `stderr`, pointing the agent immediately to the historically successful fix and stopping it from wasting hours in trial-and-error debugging loops.
 
 ---
 
-## Tiếng Việt
+## How It Works (The Sidecar Model)
 
-**global-token-saver** là công cụ dòng lệnh (CLI) chính thức của hệ sinh thái [AIPILOT.VN](https://aipilot.vn). Công cụ này giúp lưu trữ thông tin xác thực bảo mật và kích hoạt cơ chế nén Token thông minh cho các AI Agent (Cline, Cursor, Hermes) trên máy tính của bạn.
+Unlike intrusive middleware that mutates stdin or modifies model weights, AIPILOT runs cleanly at the process boundaries:
+1.  **Passive Observation**: Wraps process execution (`aipilot run -- [cmd]`), piping stdout/stderr in real-time with virtually zero overhead.
+2.  **Failure Capture**: Logs exit codes $>0$ and traceback stack traces, creating normalized error signatures by stripping path prefixes and numbers.
+3.  **Diff Mapping**: When subsequent build commands pass, it computes the unified `git diff` patch and maps it directly as the successful recovery solution for that error signature.
+4.  **speculative Guidance**: If the signature recurrs, it alerts the agent via non-authoritative hints in `stderr`, showing the exact files and summaries that resolved the issue historically.
 
-### 💡 Tính năng nổi bật
-* **Thiết lập 3 giây:** Cấu hình nhanh chóng thông qua `npx`.
-* **Đồng bộ hóa an toàn:** Kết nối mã hóa Client-Side với cụm máy chủ VPS Cloud Brain cục bộ.
-* **Tiết kiệm đến 97% chi phí:** Giảm thiểu triệt để số lượng Token đầu vào gửi tới các mô hình AI lớn bằng cách loại bỏ mã nguồn trùng lặp và lặp vô hạn.
+---
 
-### 🛠️ Hướng dẫn cài đặt & sử dụng
+## Installation & Quickstart
 
-Chạy lệnh khởi tạo trực tiếp trên Terminal của bạn:
+Get up and running in 30 seconds:
 
 ```bash
-npx global-token-saver init
-```
+# 1. Clone the repository
+git clone https://github.com/tuoaoa/global-token-saver.git aipilot
+cd aipilot
 
-Hệ thống sẽ yêu cầu bạn nhập khóa xác thực **AIPILOT.VN API Key** của bạn (truy cập [https://aipilot.vn](https://aipilot.vn) để lấy khóa miễn phí). Khi cấu hình hoàn tất, thông tin sẽ được lưu an toàn tại đường dẫn: `~/.config/global-ai-brain/config.json`.
+# 2. Install dependencies & link binary globally
+npm install
+npm link
 
-### 🔌 Tích hợp MCP Server (Cursor & Cline)
+# 3. Initialize local WAL SQLite database
+aipilot init
 
-Bạn có thể chạy `mcp_server.js` làm máy chủ Model Context Protocol (MCP) để AI Agent (như Cline hoặc Cursor) tự động gọi các công cụ tối ưu hóa token.
-
-#### Cấu hình cho Cursor IDE:
-1. Mở cài đặt **Settings** > **Features** > **MCP**.
-2. Thêm mới một MCP Server:
-   - **Name:** `aimemory-mcp-server`
-   - **Type:** `command`
-   - **Command:** `node /đường-dẫn-cục-bộ-của-bạn/global-token-saver/mcp_server.js`
-
-#### Cấu hình cho Cline:
-Thêm đoạn cấu hình sau vào tệp tin cấu hình MCP của bạn (`mcp_settings.json`):
-
-```json
-"mcpServers": {
-  "aimemory-mcp-server": {
-    "command": "node",
-    "args": [
-      "/đường-dẫn-cục-bộ-của-bạn/global-token-saver/mcp_server.js"
-    ],
-    "disabled": false,
-    "alwaysAllow": []
-  }
-}
+# 4. Observe execution failure memories
+aipilot run -- npm test
 ```
 
 ---
 
-## English
+## Core CLI Commands
 
-**global-token-saver** is the official Command-Line Interface (CLI) tool for the [AIPILOT.VN](https://aipilot.vn) ecosystem. It securely registers and configures your local environment, activating smart token prunings for AI Agents like Cline, Cursor, and Hermes on your system.
+*   **`aipilot init`**: Silently initializes the SQLite database at `~/.config/global-ai-brain/local_brain.db` in high-performance Write-Ahead Logging (WAL) mode.
+*   **`aipilot run -- [command]`**: Runs observed tasks, mapping stderr failures and git diff resolutions.
+*   **`aipilot recall "[query]"`**: Searches the database for historical failures and mapped recovery files.
+*   **`aipilot show [run_id]`**: Renders the complete raw traceback logs and side-by-side unified git patch diff.
 
-### 💡 Key Features
-* **3-Second Setup:** Instant configuration powered by `npx`.
-* **Secure Sync:** Client-side encrypted handshakes connecting local systems with the high-performance VPS Cloud Brain substrate.
-* **Save up to 97% Tokens:** Eradicates infinite AI agent loop costs and heavy context usage.
+---
 
-### 🛠️ Installation & Usage
+# ⚡ AIPILOT: Trí Nhớ Lỗi Kéo Dài Cho AI Coding (Vietnamese Version)
 
-Execute the following command directly in your terminal:
+AIPILOT là **lớp trí nhớ local giúp các AI coding agent không lặp lại cùng một sai lầm biên dịch/test**.
+
+Được xây dựng dành riêng cho cộng đồng Developer và cộng đồng Vibercode Việt Nam, AIPILOT là một công cụ tiện ích mã nguồn mở miễn phí 100% và chạy hoàn toàn offline bảo mật. Công cụ đóng vai trò như một sidecar thụ động—chụp lại các vết lỗi traceback biên dịch, băm chúng thành signature đặc trưng, và tự động ánh xạ các thay đổi git diff đã sửa lỗi thành công trong quá khứ.
+
+Khi AI Agent (như Cline, OpenHands, AutoGPT) gặp lại lỗi tương tự, AIPILOT sẽ xuất gợi ý cứu hộ trực tiếp vào luồng `stderr`, hướng Agent tới vùng code sửa lỗi thành công lịch sử, dập tắt ngay vòng lặp đoán mò tốn kém.
+
+---
+
+## Hướng Dẫn Sử Dụng Nhanh
+
+Thiết lập nhanh trong 30 giây:
 
 ```bash
-npx global-token-saver init
-```
+# 1. Tải repository về local máy
+git clone https://github.com/tuoaoa/global-token-saver.git aipilot
+cd aipilot
 
-The system will prompt you for your **AIPILOT.VN API Key** (visit [https://aipilot.vn](https://aipilot.vn) to claim your free key). Once entered, configuration files are securely stored at: `~/.config/global-ai-brain/config.json`.
+# 2. Cài đặt dependency & link lệnh chạy toàn cục
+npm install
+npm link
 
-### 🔌 MCP Server Integration (Cursor & Cline)
+# 3. Khởi tạo cơ sở dữ liệu SQLite local
+aipilot init
 
-You can run `mcp_server.js` as a native Model Context Protocol (MCP) server, enabling your AI agents (e.g. Cline, Cursor) to autonomously execute smart token savings and memory hydration.
-
-#### Cursor IDE Configuration:
-1. Open **Settings** > **Features** > **MCP**.
-2. Click **+ Add New MCP Server**:
-   - **Name:** `aimemory-mcp-server`
-   - **Type:** `command`
-   - **Command:** `node /your-absolute-local-path/global-token-saver/mcp_server.js`
-
-#### Cline Configuration:
-Append the following server block into your active MCP settings (`mcp_settings.json`):
-
-```json
-"mcpServers": {
-  "aimemory-mcp-server": {
-    "command": "node",
-    "args": [
-      "/your-absolute-local-path/global-token-saver/mcp_server.js"
-    ],
-    "disabled": false,
-    "alwaysAllow": []
-  }
-}
+# 4. Trải nghiệm chạy test quan sát lỗi
+aipilot run -- npm test
 ```
 
 ---
 
-⚡ Engineered for next-gen contextual prunings. Powered by **[AIPILOT.VN](https://aipilot.vn)**.
+## 4 Lệnh Core Vận Hành
+
+*   **`aipilot init`**: Khởi tạo âm thầm cơ sở dữ liệu SQLite tại `~/.config/global-ai-brain/local_brain.db` dưới cấu hình journal WAL tối ưu tốc độ.
+*   **`aipilot run -- [lệnh]`**: Chạy bao bọc test/build, tự động lưu vết và ánh xạ git diff sửa thành công.
+*   **`aipilot recall "[từ_khóa]"`**: Truy vấn nhanh các vết lỗi lịch sử để cung cấp gợi ý cứu hộ.
+*   **`aipilot show [run_id]`**: Renders chi tiết traceback lỗi và hiển thị full diff sửa đổi của run tương ứng.
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

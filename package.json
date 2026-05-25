@@ -1,12 +1,14 @@
 {
-  "name": "global-token-saver",
+  "name": "aipilot",
   "version": "1.0.0",
-  "description": "Context Pruning CLI Utility for Global AI Brain (AIPILOT.VN)",
-  "main": "bin/index.js",
+  "description": "Persistent Failure Memory for AI Coding - CLI Sidecar",
+  "main": "bin/aipilot.js",
   "bin": {
-    "global-token-saver": "./bin/index.js"
+    "aipilot": "./bin/aipilot.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "sqlite3": "^5.1.7"
+  },
   "engines": {
     "node": ">=18.0.0"
   },
